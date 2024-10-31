@@ -1,45 +1,53 @@
 'use client'
 
 import Link from 'next/link'
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { Logo } from '@/components/common/logo'
-import { ModeToggle } from '@/components/common/mode-toggle'
-import { Github } from 'lucide-react'
 import Image from 'next/image'
+import { ShoppingCart, User } from 'lucide-react'
+
+import { Logo } from '@/components/common/logo'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button'
+import { TooltipPortal } from '@radix-ui/react-tooltip'
 
 const Header = () => {
   return (
-    <header className="inset-x-0 top-0 z-40 bg-background backdrop-blur-[10px] shadow-sm saturate-100">
-      <div className='w-full flex justify-center bg-[#d53927]'>
+    <header className="w-full bg-background backdrop-blur-[10px] shadow-sm saturate-100 z-40">
+      <div className="w-full flex justify-center bg-[#d53927]">
         <Image src="/images/Smallbanner.webp" alt="banner" width={1264} height={61} />
       </div>
-      <div className="mx-auto max-w-7xl flex items-center justify-between px-4 md:px-8 h-14">
-        <Link href="/" aria-label="Home" title="Home">
-          <Logo />
-        </Link>
+      <div className="mx-auto max-w-7xl flex items-center justify-between px-4 md:px-8 py-4">
+        <Logo />
 
-        <div className="flex items-center gap-3">
-          <ModeToggle />
+        <div className="relative flex items-center justify-center gap-4">
+          <Link href="/cart" className="flex flex-col items-center">
+            <ShoppingCart className="text-gray-600" />
+            <p className="text-sm text-gray-600">Giỏ hàng</p>
+          </Link>
 
           <Tooltip>
             <TooltipTrigger>
-              <Link
-                href="https://github.com/atuandev"
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label="GitHub"
-              >
-                <Github />
+              <Link href="/account" className="flex flex-col items-center">
+                <User className="text-gray-600" />
+                <p className="text-sm text-gray-600">Tài khoản</p>
               </Link>
             </TooltipTrigger>
-            <TooltipContent sideOffset={10}>
-              <p>@atuandev</p>
-            </TooltipContent>
+            <TooltipPortal>
+              <TooltipContent
+                side="bottom"
+                align="end"
+                className="w-52 p-2 bg-white rounded-lg shadow-lg flex flex-col gap-2">
+                <Link href="/account/login">
+                  <Button className="w-full">
+                    Đăng nhập
+                  </Button>
+                </Link>
+                <Link href="/account/register">
+                  <Button variant="outline" className="w-full">
+                    Đăng ký
+                  </Button>
+                </Link>
+              </TooltipContent>
+            </TooltipPortal>
           </Tooltip>
         </div>
       </div>

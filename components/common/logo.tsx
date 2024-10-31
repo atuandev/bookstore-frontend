@@ -1,17 +1,12 @@
 'use client'
 
-import { cn } from '@/lib/utils'
-import { Pacifico } from 'next/font/google'
-
-const pacifico = Pacifico({
-  subsets: ['latin'],
-  weight: ['400']
-})
+import Image from 'next/image'
+import Link from 'next/link'
 
 export function Logo() {
   return (
-    <div className={cn(pacifico.className, 'tracking-wider text-xl')}>
-      atuandev
-    </div>
+    <Link href="/" aria-label="Home" title="Home">
+      <Image src="/images/fahasa-logo.webp" alt="Logo" width="200" height="0" />
+    </Link>
   )
 }

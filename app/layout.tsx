@@ -23,7 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
     <body
       className={cn(
-        'min-h-screen bg-neutral-200 dark:bg-background font-sans antialiased',
+        'bg-neutral-200 dark:bg-background font-sans antialiased',
         nunitoSans.className,
       )}
     >
