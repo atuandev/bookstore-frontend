@@ -2,6 +2,8 @@
 
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeProvider } from 'next-themes'
+import { SWRConfig } from 'swr'
+import fetcher from '@/services/fetcher'
 
 type ProvidersProps = {
   children: React.ReactNode
@@ -9,14 +11,16 @@ type ProvidersProps = {
 
 export default function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider
-      attribute='class'
-      defaultTheme='system'
-      enableSystem
-      enableColorScheme
-      disableTransitionOnChange
-    >
-      <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
-    </ThemeProvider>
+    <SWRConfig value={{ fetcher }}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        enableColorScheme
+        disableTransitionOnChange
+      >
+        <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+      </ThemeProvider>
+    </SWRConfig>
   )
 }

@@ -1,40 +1,35 @@
 'use client'
 
-import { z } from 'zod'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import axiosClient from '@/lib/axiosClient'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { FormError } from '@/components/form/form-error'
 import { FormSuccess } from '@/components/form/form-success'
 import { LoadingButton } from '@/components/ui/loading-button'
 import { PasswordInput } from '@/components/ui/password-input'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-
-const RegisterSchema = z.object({
-  name: z.string().min(1, {
-    message: 'Tên không được để trống',
-  }),
-  email: z.string().email({
-    message: 'Email không hợp lệ',
-  }),
-  username: z.string().min(3, {
-    message: 'Tên đăng nhập phải chứa ít nhất 3 ký tự',
-  }),
-  password: z.string().min(6, {
-    message: 'Mật khẩu phải chứa ít nhất 6 ký tự',
-  }),
-})
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { RegisterSchema, RegisterSchemaType } from '@/schemas/auth/register'
 
 export function FormRegister() {
+  const router = useRouter()
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const [isSpending, startTransition] = useTransition()
 
-  const form = useForm<z.infer<typeof RegisterSchema>>({
+  const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       name: '',
@@ -44,8 +39,18 @@ export function FormRegister() {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof RegisterSchema>) => {
-    console.log(data)
+  const onSubmit = (data: RegisterSchemaType) => {
+    startTransition(() => {
+      axiosClient
+        .post('/users/add', data)
+        .then(() => {
+          setSuccess('Đăng ký thành công')
+          router.push('/account/login')
+        })
+        .catch(error => {
+          setError(error.message)
+        })
+    })
   }
 
   return (
@@ -60,12 +65,7 @@ export function FormRegister() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isSpending}
-                      placeholder="Nhập tên"
-                      type="text"
-                    />
+                    <Input {...field} disabled={isSpending} placeholder="Nhập tên" type="text" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -78,12 +78,7 @@ export function FormRegister() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isSpending}
-                      placeholder="Nhập email"
-                      type="email"
-                    />
+                    <Input {...field} disabled={isSpending} placeholder="Nhập email" type="email" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,11 +109,7 @@ export function FormRegister() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput
-                      {...field}
-                      disabled={isSpending}
-                      placeholder="Nhập password"
-                    />
+                    <PasswordInput {...field} disabled={isSpending} placeholder="Nhập password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,5 +1,6 @@
 import { Container } from '@/components/common/container'
 import { Heading } from '@/components/common/heading'
+import { UserDetail } from '@/app/account/_components/user-detail'
 
 export default function AccountPage() {
   return (
@@ -8,6 +9,7 @@ export default function AccountPage() {
       <Heading
         title="Account Page"
       />
+      <UserDetail />
     </Container>
   )
 }

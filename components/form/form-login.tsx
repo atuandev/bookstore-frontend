@@ -2,33 +2,28 @@
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 
+import axiosClient from '@/lib/axiosClient'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { Button } from '@/components/ui/button'
 import { FormError } from '@/components/form/form-error'
 import { FormSuccess } from '@/components/form/form-success'
 import { LoadingButton } from '@/components/ui/loading-button'
-
-const LoginSchema = z.object({
-  username: z.string().min(3, {
-    message: 'Tên đăng nhập phải chứa ít nhất 3 ký tự',
-  }),
-  password: z.string().min(6, {
-    message: 'Mật khẩu phải chứa ít nhất 6 ký tự',
-  }),
-})
+import { LoginResponseSchemaType, LoginSchema, LoginSchemaType } from '@/schemas/auth/login'
+import { setAccessToken } from '@/utils/local-storage'
 
 export function FormLogin() {
+  const router = useRouter()
   const [error, setError] = useState<string | undefined>('')
   const [success, setSuccess] = useState<string | undefined>('')
   const [isSpending, startTransition] = useTransition()
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
+  const form = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       username: '',
@@ -36,8 +31,22 @@ export function FormLogin() {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof LoginSchema>) => {
-    console.log(data)
+  const onSubmit = async (data: LoginSchemaType) => {
+    startTransition(() => {
+      axiosClient
+        .post<LoginResponseSchemaType>('/auth/login', data)
+        .then(res => {
+          // Save accessToken to local storage
+          const accessToken = res.data.data?.token
+          setAccessToken(accessToken)
+
+          setSuccess('Đăng nhập thành công')
+          router.push('/')
+        })
+        .catch(error => {
+          setError(error.message)
+        })
+    })
   }
 
   return (
@@ -70,11 +79,7 @@ export function FormLogin() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput
-                      {...field}
-                      disabled={isSpending}
-                      placeholder="Nhập password"
-                    />
+                    <PasswordInput {...field} disabled={isSpending} placeholder="Nhập password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
